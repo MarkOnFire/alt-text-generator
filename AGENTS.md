@@ -6,12 +6,14 @@
 - `tests/` contains Jest specs and fixtures. Co-locate integration scenarios under `tests/integration/` to exercise the full request path.
 - `assets/` is reserved for sample inputs (image URLs, captions) that double as regression fixtures. Keep everything under 1 MB to avoid bloating the repository.
 - `docs/` is optional but recommended for long-form guides (playbooks, UX notes). Link back to this guide from any onboarding doc.
+- `pending_prompts/` (generated) collects ChatGPT-ready prompt files when running without API credentials; add to `.gitignore`.
 
 ## Build, Test, and Development Commands
 - `npm install` installs dependencies; rerun when you pull new prompt utilities or tooling.
-- `npm run dev` starts a watch-mode CLI that accepts image descriptors and streams candidate alt text.
-- `npm run build` compiles TypeScript to `dist/` and validates prompt JSON.
-- `npm test` runs the Jest suite, including lint, unit, and integration checks.
+- `npm run watch` monitors the configured folder for new images. Without an API key it drops manual prompts in `pending_prompts/`; with a key it logs results automatically.
+- `npm run process-pending` replays queued manual prompts (`.payload.json`). Requires `OPENAI_API_KEY`.
+- `npm run build` compiles TypeScript to `dist/` and validates prompt JSON (future use).
+- `npm test` runs the Jest suite, including lint, unit, and integration checks (add coverage when modules stabilize).
 
 ## Coding Style & Naming Conventions
 - Target Node.js 20 and TypeScript strict mode. Use ES module syntax and 2-space indentation.
@@ -33,5 +35,6 @@
 
 ## Security & Configuration Tips
 - Store credentials (OpenAI keys, analytics tokens) in `.env.local` and load them through `dotenv`; never commit secrets.
+- Use `PROCESSOR_MODE=manual` when no API key is available; prompts will be staged in `pending_prompts/` for manual ChatGPT runs.
 - Rotate API keys quarterly and document changes in `docs/security.md`.
 - Sanitize any sample image URLs before committing to avoid PII leaks, and prefer Creative Commons assets for fixtures.

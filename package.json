@@ -1,0 +1,16 @@
+{
+  "name": "alt-text-generator",
+  "version": "0.1.0",
+  "description": "Folder watcher that generates accessible alt text with OpenAI responses.",
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "watch": "node src/index.js",
+    "process-pending": "node src/process-pending.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

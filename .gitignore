@@ -1,0 +1,9 @@
+node_modules/
+.env.local
+pending_prompts/
+pending_prompts/*.prompt.md
+pending_prompts/*.payload.json
+sample_image/alt-text-log.md
+sample_image/*.prompt.md
+sample_image/*.payload.json
+dist/
