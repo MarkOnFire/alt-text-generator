@@ -43,3 +43,14 @@ Errors (missing API key, API failures, unreadable files) are logged to the conso
 3. Run `npm run watch` and verify `sample_image/alt-text-log.md` updates when files change.
 
 Deactivate the watcher with `Ctrl+C`. The process is stateless; you can restart it at any time to resume monitoring the configured folder.
+
+## Co-Authors
+
+This project is developed collaboratively with AI assistance. Commit attribution follows the workspace conventions in `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`.
+
+| Agent | Role | Recent Commits |
+|-------|------|----------------|
+| Main Assistant | Primary development and automation | `git log --grep="Agent: Main Assistant"` |
+| code-reviewer | Code review and analysis | `git log --grep="Agent: code-reviewer"` |
+
+Run `git log --grep="Agent:" --oneline` to see the full agent history for this repository. See the workspace conventions document for additional queries.

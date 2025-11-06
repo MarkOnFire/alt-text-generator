@@ -1,5 +1,11 @@
 # Repository Guidelines
 
+## Git Commit Convention
+
+**IMPORTANT**: This project follows workspace-wide commit conventions.
+
+**See**: `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`
+
 ## Project Structure & Module Organization
 - `src/` holds the TypeScript agent code: the prompt builder, OpenAI client wrapper, and UX helpers. Keep the primary entry point in `src/index.ts` and group reusable logic under `src/lib/`.
 - `prompts/` stores curated prompt fragments and persona definitions; mirror the naming of the instructions in `instructions.md` so reviewers can trace changes quickly.
