@@ -23,8 +23,9 @@ let isRunning = false;
 
 export async function startWatcher() {
   console.log(
-    `Watching ${config.watchRoot} for new images (log file: ${config.logFilename})`
+    `Watching ${config.watchRoot} for new images (export markdown: ${config.exportMarkdownFilename})`
   );
+  console.log(`Exports will be saved under ${config.exportRoot}`);
 
   await scanDirectory(config.watchRoot);
   drainQueue();
@@ -67,6 +68,7 @@ function scheduleInspection(filePath) {
 
 async function inspectFile(filePath) {
   if (!isImageFile(filePath)) return;
+  if (shouldIgnore(filePath)) return;
   let stats;
   try {
     stats = await stat(filePath);
@@ -137,6 +139,24 @@ function drainQueue() {
 function isImageFile(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   return IMAGE_EXTENSIONS.has(extension);
+}
+
+function shouldIgnore(filePath) {
+  return (
+    isInside(filePath, config.exportRoot) ||
+    isInside(filePath, config.manualPromptDir)
+  );
+}
+
+function isInside(targetPath, possibleParent) {
+  if (!targetPath || !possibleParent) return false;
+  const relative = path.relative(possibleParent, targetPath);
+  if (relative === '') return true;
+  return (
+    relative &&
+    !relative.startsWith('..') &&
+    !path.isAbsolute(relative)
+  );
 }
 
 function logProcessingResult(filePath, result) {

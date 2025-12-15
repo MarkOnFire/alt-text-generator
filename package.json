@@ -10,6 +10,9 @@
     "watch": "node src/index.js",
     "process-pending": "node src/process-pending.js"
   },
+  "dependencies": {
+    "sharp": "^0.33.3"
+  },
   "engines": {
     "node": ">=20"
   }

@@ -4,10 +4,25 @@ import path from 'node:path';
 import config from './config.js';
 import { appendResultLog } from './logger.js';
 import { generateAltText } from './alt-text-service.js';
+import { prepareExport } from './exporter.js';
 
 export async function processImage(imagePath) {
-  const docPath = computeDocPath(imagePath);
-  const payload = await buildPayload(imagePath, docPath);
+  let exportContext;
+  try {
+    exportContext = await prepareExport(imagePath);
+  } catch (error) {
+    return {
+      status: 'error',
+      notes: `Failed to prepare export: ${error.message ?? error}`,
+    };
+  }
+
+  const docPath = exportContext.markdownPath;
+  const payload = await buildPayload(
+    exportContext.originalPath,
+    docPath,
+    exportContext
+  );
 
   const result = await generateAltText(payload);
   const altText = result.alt_text ?? '';
@@ -18,7 +33,10 @@ export async function processImage(imagePath) {
 
   await appendResultLog({
     docPath: resolvedDocPath,
-    imagePath,
+    imagePath: exportContext.originalPath,
+    imageKey: exportContext.imageKey,
+    previewPath: exportContext.optimizedJpegPath,
+    title: exportContext.suggestedTitle,
     altText,
     summary,
     notes,
@@ -31,7 +49,7 @@ export async function processImage(imagePath) {
   };
 }
 
-async function buildPayload(imagePath, docPath) {
+async function buildPayload(imagePath, docPath, exportContext) {
   const payload = {
     image_path: imagePath,
     doc_path: docPath,
@@ -50,12 +68,11 @@ async function buildPayload(imagePath, docPath) {
     payload.ocr_text = ocrText;
   }
 
-  return payload;
-}
+  if (exportContext?.exportMetadata) {
+    payload.export_metadata = exportContext.exportMetadata;
+  }
 
-function computeDocPath(imagePath) {
-  const directory = path.dirname(imagePath);
-  return path.join(directory, config.logFilename);
+  return payload;
 }
 
 async function loadCompanionText(imagePath) {

@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
+const defaultWatchRoot =
+  process.env.WATCH_ROOT ?? '/Volumes/WPM SSD/INGEST/needs-alt-text';
 
 loadEnvFiles();
 
@@ -51,14 +53,22 @@ function parseKeywords(input) {
     .filter(Boolean);
 }
 
+const resolvedWatchRoot = path.resolve(defaultWatchRoot);
+
 const config = {
   projectRoot,
   openaiApiKey: process.env.OPENAI_API_KEY ?? '',
   openaiModel: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
-  watchRoot:
-    process.env.WATCH_ROOT ?? '/Volumes/WPM SSD/INGEST/needs-alt-text',
+  watchRoot: resolvedWatchRoot,
+  exportRoot: resolveExportRoot(resolvedWatchRoot),
+  exportMarkdownFilename: process.env.EXPORT_MARKDOWN_FILENAME ?? 'images.md',
+  optimizedMaxDimension: parseNumber(
+    process.env.OPTIMIZED_MAX_DIMENSION,
+    3000,
+    3000
+  ),
   logFilename: process.env.LOG_FILENAME ?? 'alt-text-log.md',
-  pollIntervalMs: Number.parseInt(process.env.POLL_INTERVAL_MS ?? '1000', 10),
+  pollIntervalMs: parseNumber(process.env.POLL_INTERVAL_MS, 1000, 1000),
   projectKeywords: parseKeywords(process.env.PROJECT_KEYWORDS ?? ''),
   humanNotes: process.env.HUMAN_NOTES ?? '',
   processorMode: resolveProcessorMode(process.env.PROCESSOR_MODE),
@@ -74,6 +84,14 @@ if (!Number.isFinite(config.pollIntervalMs) || config.pollIntervalMs < 250) {
 
 export default config;
 
+function resolveExportRoot(watchRoot) {
+  const rawExportRoot = process.env.EXPORT_ROOT;
+  if (rawExportRoot) {
+    return path.resolve(rawExportRoot);
+  }
+  return path.resolve(path.dirname(watchRoot), 'EXPORTS');
+}
+
 function resolveProcessorMode(rawMode) {
   const normalized = (rawMode ?? 'auto').toLowerCase();
   const hasApiKey = Boolean(process.env.OPENAI_API_KEY);
@@ -83,4 +101,11 @@ function resolveProcessorMode(rawMode) {
   }
 
   return hasApiKey ? 'api' : 'manual';
+}
+
+function parseNumber(rawValue, fallback, floor) {
+  const parsed = Number.parseInt(rawValue ?? `${fallback}`, 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  if (parsed < floor) return floor;
+  return parsed;
 }

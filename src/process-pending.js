@@ -4,6 +4,7 @@ import path from 'node:path';
 import config from './config.js';
 import { appendResultLog } from './logger.js';
 import { generateAltText as generateAltTextApi } from './openai-client.js';
+import { rebuildExportMetadataFromPayload } from './exporter.js';
 
 async function main() {
   if (!config.openaiApiKey) {
@@ -68,10 +69,14 @@ async function handlePayloadFile(filePath) {
   const summary = result.summary ?? '';
   const notes = result.notes ?? '';
   const resolvedDocPath = result.doc_path || payload.doc_path;
+  const exportMeta = rebuildExportMetadataFromPayload(payload);
 
   await appendResultLog({
     docPath: resolvedDocPath,
     imagePath: payload.image_path,
+    imageKey: exportMeta.imageKey,
+    previewPath: exportMeta.previewPath,
+    title: exportMeta.title,
     altText,
     summary,
     notes,
