@@ -31,4 +31,4 @@ Watches a designated ingest folder for new images, generates alt text using the 
 - `npm run watch` — start the watcher/exporter.
 - `npm run process-pending` — process queued `.payload.json` files from manual runs.
 
-The project follows Conventional Commits (see `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`) and targets Node.js 20 in strict, bias-aware alt text generation.
+The project follows Conventional Commits and targets Node.js 20 in strict, bias-aware alt text generation.
